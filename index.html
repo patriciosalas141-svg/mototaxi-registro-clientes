@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Registro de Chofer</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #222222);
+      --hint: var(--tg-theme-hint-color, #888888);
+      --btn-bg: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --secondary-bg: var(--tg-theme-secondary-bg-color, #f4f4f5);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header h2 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .header p {
+      font-size: 14px;
+      color: var(--hint);
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--hint);
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 10px;
+      background-color: var(--secondary-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: var(--btn-bg);
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: opacity 0.2s;
+    }
+    .btn-submit:active {
+      opacity: 0.85;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #475569;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>🛺 Registro de Chofer</h2>
+    <p>Completa tus datos para empezar a recibir viajes</p>
+  </div>
+
+  <form id="registroForm" onsubmit="enviarFormulario(event)">
+    <div class="form-group">
+      <label for="nombre">Nombre Completo <span class="badge">Requerido</span></label>
+      <input type="text" id="nombre" placeholder="Ej. Juan Pérez González" required autocomplete="name">
+    </div>
+
+    <div class="form-group">
+      <label for="unidad">Número de Unidad / Moto <span class="badge">Requerido</span></label>
+      <input type="text" id="unidad" placeholder="Ej. MT-12 o Placa 45AB" required>
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Teléfono de contacto <span class="badge">Requerido</span></label>
+      <input type="tel" id="telefono" placeholder="Ej. 5512345678">
+    </div>
+
+    <div class="form-group">
+      <label for="unidadDescription">Descripcion breve de unidad<span class="badge">Requerido</span></label>
+      <input type="text" id="unidadDescription" placeholder="Ej. Moto rojo" required>
+    </div>
+
+    <button type="submit" class="btn-submit">Enviar Registro ✅</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    function enviarFormulario(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value.trim();
+      const unidad = document.getElementById('unidad').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const unidadDescription = document.getElementById('unidadDescription').value.trim();
+
+      if (!nombre || !unidad || !telefono || !unidadDescription) {
+        if (tg) tg.showAlert('Por favor ingresa tu nombre, número de unidad y breve descripcion.');
+        else alert('Por favor ingresa tu nombre y número de unidad.');
+        return;
+      }
+
+      const datos = {
+        nombre: nombre,
+        unidad: unidad,
+        telefono: telefono,
+        unidadDescription: unidadDescription
+      };
+
+      if (tg && tg.sendData) {
+        // Envía el JSON directo al bot y cierra la ventana
+        tg.sendData(JSON.stringify(datos));
+      } else {
+        alert('Datos enviados: ' + JSON.stringify(datos));
+      }
+    }
+  </script>
+</body>
+</html>
